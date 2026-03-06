@@ -1,4 +1,4 @@
-from . import narrative_dna, emotion, cliffhanger, retention, viral, tension
+from . import narrative_dna, emotion, cliffhanger, retention, viral, tension, story_decomposer
 import collections
 
 class NarrativeDNAAggregator:
@@ -83,6 +83,19 @@ class NarrativeDNAAggregator:
             "character_complexity": round(float(character_complexity), 2)
         }
 
+        try:
+            todorov_stage = story_decomposer.analyze_todorov_stage(story_text)
+        except Exception as e:
+            print(f"Error in Todorov analysis: {e}")
+            todorov_stage = {"stage": "Unknown", "confidence": 0}
+
+        try:
+            characters = tension_data.get("characters", [])
+            propp_roles = story_decomposer.extract_propp_characters(story_text, characters)
+        except Exception as e:
+            print(f"Error in Propp character extraction: {e}")
+            propp_roles = {}
+
         # Structure the final output
         result = {
             "pacing_curve": pacing_data,
@@ -94,7 +107,9 @@ class NarrativeDNAAggregator:
             "viral_moments": viral_moms,
             "tension_graph": tension_data,
             "scroll_stop_score": scroll_score,
-            "narrative_dna": narrative_dna_fingerprint
+            "narrative_dna": narrative_dna_fingerprint,
+            "todorov_stage": todorov_stage,
+            "propp_characters": propp_roles
         }
         
         return result
