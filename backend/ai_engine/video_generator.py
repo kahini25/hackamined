@@ -17,7 +17,7 @@ BACKEND_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUTPUT_DIR = os.path.join(BACKEND_DIR, "generated_videos")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-MODEL_ID = "Wan-AI/Wan2.2-T2V-A14B-Diffusers"
+MODEL_ID = "Wan-AI/Wan2.1-T2V-1.3B"  # Consumer-friendly model; works on 4GB+ GPUs via CPU offloading
 
 # Shot duration constants
 FRAMES_PER_CLIP = 81          # ~5 seconds at 16fps (default for Wan2.2)
@@ -81,31 +81,36 @@ def _build_scene_prompt(base_prompt: str, shot_style: str, cinematic_style: str,
 
 
 def _load_pipeline():
-    """Lazy-load the Wan2.2 T2V diffusion pipeline to avoid startup overhead."""
+    """Lazy-load the Wan2.1-T2V-1.3B pipeline with CPU offloading for low-VRAM GPUs."""
     try:
         import torch
-        from diffusers import AutoencoderKLWan, WanTransformer3DModel, WanPipeline
+        from diffusers import WanPipeline
         from diffusers.schedulers.scheduling_unipc_multistep import UniPCMultistepScheduler
-        from transformers import CLIPVisionModel
 
-        print(f"[video_generator] Loading Wan2.2 pipeline from {MODEL_ID}...")
+        print(f"[video_generator] Loading Wan2.1-1.3B pipeline from {MODEL_ID}...")
         
         device = "cuda" if torch.cuda.is_available() else "cpu"
+        # Use float16 on GPU, float32 on CPU to avoid precision errors
         dtype = torch.float16 if torch.cuda.is_available() else torch.float32
         
-        vae = AutoencoderKLWan.from_pretrained(MODEL_ID, subfolder="vae", torch_dtype=dtype)
         pipe = WanPipeline.from_pretrained(
             MODEL_ID,
-            vae=vae,
             torch_dtype=dtype,
         )
-        pipe.scheduler = UniPCMultistepScheduler.from_config(pipe.scheduler.config, flow_shift=8.0)
-        pipe = pipe.to(device)
+        
+        pipe.scheduler = UniPCMultistepScheduler.from_config(
+            pipe.scheduler.config, flow_shift=8.0
+        )
         
         if torch.cuda.is_available():
-            pipe.enable_model_cpu_offload()
+            # Sequential offload keeps only one component on GPU at a time
+            # Best strategy for 4GB VRAM — slower but won't OOM
+            pipe.enable_sequential_cpu_offload()
+        else:
+            pipe = pipe.to("cpu")
+            print("[video_generator] No GPU found, running fully on CPU (very slow).")
             
-        print(f"[video_generator] Pipeline loaded on {device}.")
+        print(f"[video_generator] Pipeline ready.")
         return pipe
     except Exception as e:
         print(f"[video_generator] ERROR loading pipeline: {e}")
@@ -220,7 +225,7 @@ def generate_episode_video(
             width=width,
             num_frames=FRAMES_PER_CLIP,
             guidance_scale=6.0,
-            num_inference_steps=30,
+            num_inference_steps=20,  # Reduced from 30 for speed on low VRAM
         )
         
         frames = output.frames[0]  # List[PIL.Image]
