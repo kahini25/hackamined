@@ -1,25 +1,27 @@
 import os
+import sys
+sys.path.append(os.path.dirname(__file__))
 import asyncio
 from fastapi import FastAPI, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
-import google.generativeai as genai
+from google import genai
 from dotenv import load_dotenv
+load_dotenv()
 import json
 
 # Import our AI modules
-from ai_engine import narrative_dna, emotion, cliffhanger, retention, viral, tension
+from ai_engine import emotion, cliffhanger
+from ai_engine.aggregator import NarrativeDNAAggregator
 from models.schemas import StoryRequest, ArcResponse, AnalysisRequest, AnalyticsResponse, Episode, ImprovementRequest, ImprovementResponse
 
 load_dotenv(override=True)
 
 # Configure Gemini
-# NOTE: In a real hackathon, handle the case where the key is missing gracefully
 api_key = os.getenv("GOOGLE_API_KEY")
 if api_key:
-    genai.configure(api_key=api_key)
-    model = genai.GenerativeModel('gemini-2.5-flash')
+    client = genai.Client(api_key=api_key)
 else:
-    model = None
+    client = None
     print("WARNING: GOOGLE_API_KEY not found in .env")
 
 app = FastAPI(title="Narrative DNA Engine")
@@ -62,8 +64,8 @@ async def generate_arc(request: StoryRequest):
         )
     ]
 
-    if not model:
-        print("WARNING: Gemini not configured. Returning Demo Data.")
+    if not client:
+        print("WARNING: Gemini client not configured. Returning Demo Data.")
         return ArcResponse(episodes=fallback_episodes)
 
     prompt = f"""
@@ -77,7 +79,10 @@ async def generate_arc(request: StoryRequest):
     """
     
     try:
-        response = model.generate_content(prompt)
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=prompt,
+        )
         text = response.text.replace("```json", "").replace("```", "")
         data = json.loads(text)
         episodes = [Episode(**ep) for ep in data]
@@ -91,23 +96,10 @@ async def generate_arc(request: StoryRequest):
 async def analyze_story(request: AnalysisRequest):
     script = request.script_text
     
-    pacing_data = narrative_dna.analyze_pacing(script)
-    emotion_data = emotion.analyze_emotional_arc(script)
-    cliff_score = cliffhanger.calculate_score(script, emotion_data)
-    drop_off = retention.predict_drop_off(script)
-    viral_moms = viral.detect_viral_moments(script, emotion_data)
-    tension_data = tension.build_graph(script)
-    scroll_score = retention.predict_scroll_stop(script)
+    aggregator = NarrativeDNAAggregator()
+    analysis_data = aggregator.analyze_story(script)
 
-    return AnalyticsResponse(
-        pacing_curve=pacing_data,
-        emotional_arc=emotion_data,
-        cliffhanger_score=cliff_score,
-        drop_off_risk=drop_off,
-        viral_moments=viral_moms,
-        tension_graph=tension_data,
-        scroll_stop_score=scroll_score
-    )
+    return AnalyticsResponse(**analysis_data)
 
 @app.post("/improve_cliffhanger", response_model=ImprovementResponse)
 async def improve_cliffhanger(request: ImprovementRequest):
@@ -117,7 +109,7 @@ async def improve_cliffhanger(request: ImprovementRequest):
     emotion_arc = emotion.analyze_emotional_arc(script)
     current_score = cliffhanger.calculate_score(script, emotion_arc)
     
-    if not model:
+    if not client:
         return ImprovementResponse(
             original_score=current_score,
             analysis="Demo Mode: LLM not connected.",
@@ -154,7 +146,10 @@ async def improve_cliffhanger(request: ImprovementRequest):
     """
     
     try:
-        response = model.generate_content(prompt)
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=prompt,
+        )
         text = response.text.replace("```json", "").replace("```", "")
         data = json.loads(text)
         

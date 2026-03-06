@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 
 class StoryRequest(BaseModel):
     idea: str
@@ -29,8 +29,11 @@ class ArcResponse(BaseModel):
 class AnalyticsResponse(BaseModel):
     pacing_curve: List[float]
     emotional_arc: List[Dict[str, Any]]
+    emotion_analysis: Optional[List[Dict[str, Any]]] = None
     cliffhanger_score: float
-    drop_off_risk: List[Dict[str, Any]]
+    drop_off_risk: Dict[str, Any]
+    retention_prediction: Optional[Dict[str, Any]] = None
     viral_moments: List[Dict[str, Any]]
     tension_graph: Dict[str, Any]
     scroll_stop_score: float
+    narrative_dna: Optional[Dict[str, Any]] = None
