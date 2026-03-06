@@ -19,16 +19,24 @@ function App() {
     setLoading(false);
   };
 
+  const handleUpload = (scriptText) => {
+    // Treat the uploaded script as one single "Episode" segment
+    const uploadedEp = {
+      title: "Uploaded Script",
+      synopsis: "Custom script uploaded for direct analysis.",
+      script_segment: scriptText
+    };
+    setEpisodes([uploadedEp]);
+  };
+
   return (
-    <div className="min-h-screen bg-black text-white p-6 font-sans">
+    <div className="min-h-screen bg-gray-50 text-gray-900 p-6 font-sans">
       <div className="max-w-7xl mx-auto">
-        <header className="mb-8 flex justify-between items-center">
-            <h1 className="text-xl font-mono text-gray-500">NARRATIVE_DNA_ENGINE // v1.0</h1>
-        </header>
-        
+
+
         {episodes.length === 0 ? (
           <div className="max-w-2xl mx-auto mt-20">
-            <StoryInput onGenerate={handleGenerate} isLoading={loading} />
+            <StoryInput onGenerate={handleGenerate} onUpload={handleUpload} isLoading={loading} />
           </div>
         ) : (
           <EpisodeDashboard episodes={episodes} />

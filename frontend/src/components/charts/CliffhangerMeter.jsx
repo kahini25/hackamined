@@ -23,8 +23,8 @@ const CliffhangerMeter = ({ score }) => {
     }
 
     return (
-        <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
-            <h3 className="text-gray-400 text-sm mb-2 uppercase tracking-wider flex justify-between">
+        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <h3 className="text-gray-500 font-semibold text-sm mb-2 uppercase tracking-wider flex justify-between">
                 Cliffhanger Strength
                 <span className={`font-bold ${statusColor}`}>{normalizedScore.toFixed(0)} / 100</span>
             </h3>
@@ -37,7 +37,7 @@ const CliffhangerMeter = ({ score }) => {
                 </div>
 
                 {/* Progress bar container */}
-                <div className="h-4 w-full bg-gray-900 rounded-full overflow-hidden border border-gray-700 shadow-inner">
+                <div className="h-4 w-full bg-gray-200 rounded-full overflow-hidden border border-gray-300 shadow-inner">
                     {/* Animated progress bar fill */}
                     <div
                         className={`h-full ${barColor} shadow-[0_0_10px_currentColor] transition-all duration-1000 ease-out`}

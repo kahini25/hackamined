@@ -3,6 +3,47 @@
 @tailwind utilities;
 
 body {
-    background-color: #000;
-    color: #fff;
+    background-color: #f9fafb;
+    color: #111827;
+}
+
+/* DNA Loader Animation styles */
+.dna-dot-top {
+    animation: dna-top 1.6s infinite ease-in-out;
+}
+
+.dna-dot-bottom {
+    animation: dna-bottom 1.6s infinite ease-in-out;
+}
+
+@keyframes dna-top {
+
+    0%,
+    100% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+        z-index: 10;
+    }
+
+    50% {
+        transform: translateY(14px) scale(0.5);
+        opacity: 0.4;
+        z-index: 0;
+    }
+}
+
+@keyframes dna-bottom {
+
+    0%,
+    100% {
+        transform: translateY(0) scale(0.5);
+        opacity: 0.4;
+        z-index: 0;
+    }
+
+    50% {
+        transform: translateY(-14px) scale(1);
+        opacity: 1;
+        z-index: 10;
+    }
 }

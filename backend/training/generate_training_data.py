@@ -19,7 +19,6 @@ Run:
 """
 
 import csv
-import json
 import os
 import random
 
@@ -30,7 +29,6 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 # ─────────────────────────────────────────────────────────────────────────────
 # SECTION 1: Screenplay Sentence Bank
 # ─────────────────────────────────────────────────────────────────────────────
-# High-intensity (action, conflict, revelation) sentences
 HIGH_INTENSITY = [
     "She pulled the trigger but the gun was empty.",
     "He slammed the door and screamed into the darkness.",
@@ -64,7 +62,6 @@ HIGH_INTENSITY = [
     "The truth will destroy everything you love.",
 ]
 
-# Low-intensity (reflective, contemplative, expository) sentences
 LOW_INTENSITY = [
     "She sat quietly by the window, watching the rain fall.",
     "He stirred his coffee slowly and looked at the photograph.",
@@ -103,22 +100,19 @@ LOW_INTENSITY = [
 # ─────────────────────────────────────────────────────────────────────────────
 pacing_pairs = []
 
-# Similar tempo pairs (label = 0.8–1.0) — both high intensity
 for i in range(len(HIGH_INTENSITY)):
     for j in range(i + 1, len(HIGH_INTENSITY)):
-        if random.random() < 0.4:  # sample subset
+        if random.random() < 0.4:
             pacing_pairs.append((HIGH_INTENSITY[i], HIGH_INTENSITY[j], round(random.uniform(0.75, 1.0), 2)))
 
-# Similar tempo pairs (label = 0.8–1.0) — both low intensity
 for i in range(len(LOW_INTENSITY)):
     for j in range(i + 1, len(LOW_INTENSITY)):
         if random.random() < 0.4:
             pacing_pairs.append((LOW_INTENSITY[i], LOW_INTENSITY[j], round(random.uniform(0.75, 1.0), 2)))
 
-# Dissimilar tempo pairs (label = 0.0–0.2) — high vs low
 for h in HIGH_INTENSITY:
     for l in LOW_INTENSITY:
-        if random.random() < 0.15:  # sample subset to keep dataset balanced
+        if random.random() < 0.15:
             pacing_pairs.append((h, l, round(random.uniform(0.0, 0.2), 2)))
 
 random.shuffle(pacing_pairs)
@@ -131,10 +125,9 @@ with open(pacing_path, 'w', newline='', encoding='utf-8') as f:
 print(f"[✓] Pacing pairs generated: {len(pacing_pairs)} samples → {pacing_path}")
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SECTION 3: Generate Cliffhanger Dataset
+# SECTION 3: Generate Cliffhanger Dataset (70 samples)
 # ─────────────────────────────────────────────────────────────────────────────
 CLIFFHANGER_DATA = [
-    # (text_ending, score)  score: 0-100
     # --- High cliffhangers (70-100) ---
     ("She opened the envelope and her face went pale. The letter said: 'We have your daughter. Don't call the police.' What had she done?", 92),
     ("He reached the door just as the lights went out. A voice whispered from the darkness: 'You should have stayed dead.'", 95),
@@ -156,6 +149,16 @@ CLIFFHANGER_DATA = [
     ("The safe was empty. The money was gone. And so was Maria.", 78),
     ("She pressed play on the recording. It was her own voice confessing to the murder.", 92),
     ("He stepped out of the shadows. The man they had buried three years ago was very much alive.", 95),
+    ("She pulled the trigger. Click. Empty. He smiled and took a step closer.", 96),
+    ("The doors sealed shut. The countdown began. None of them had the code.", 93),
+    ("He read the last line of the file. His hands started shaking. His own name. His own signature.", 94),
+    ("She picked up the phone. On the other end — silence. Then breathing. Then: 'I see you.'", 97),
+    ("The child looked up at her. 'Mommy,' he said, 'the man behind you told me to say goodbye.'", 99),
+    ("He deleted the message. But it was already sent. To everyone.", 82),
+    ("She thought she was alone. The shadow on the wall told her otherwise.", 88),
+    ("They had him surrounded. Then the lights went out. When they came back — he was gone.", 91),
+    ("The antidote was destroyed. And she had twelve minutes.", 94),
+    ("He whispered the name. The colour drained from the detective's face. It was her.", 90),
 
     # --- Medium cliffhangers (35-65) ---
     ("She knew something was wrong, but she couldn't quite place it. The house felt different somehow.", 50),
@@ -172,6 +175,12 @@ CLIFFHANGER_DATA = [
     ("He noticed that one of the files had been accessed at 3am. He hadn't done it.", 60),
     ("Her flight was cancelled. And her phone was dead. And no one knew she was here.", 55),
     ("The photograph showed three people. The caption named only two.", 52),
+    ("Something about his smile wasn't right. She just couldn't figure out what.", 44),
+    ("He opened the drawer. The gun was still there. He hadn't decided yet.", 48),
+    ("The call dropped. She tried again. No signal. She was completely alone.", 57),
+    ("He didn't trust the new partner. Not since that look she gave him at the courthouse.", 46),
+    ("The money transfer cleared. But the account it went to — didn't exist.", 63),
+    ("She watched him walk away. Something told her it wasn't the last time she'd see him.", 39),
 
     # --- Low cliffhangers (0-25) ---
     ("She went to bed early and slept through the night. Tomorrow would be another day.", 5),
@@ -188,6 +197,12 @@ CLIFFHANGER_DATA = [
     ("He organized his desk and reviewed his schedule for the next week.", 3),
     ("The children had gone home. The park was empty and quiet.", 6),
     ("She sent the birthday card and hoped it would arrive on time.", 4),
+    ("He watered the plants and turned off the kitchen light. A quiet evening.", 2),
+    ("She finished her tea, washed the cup, and put it away carefully.", 1),
+    ("He smiled at the news. It had worked out better than expected.", 5),
+    ("The train arrived on time. She found a window seat and settled in.", 3),
+    ("He passed the exam. Relief washed over him as he read the result.", 4),
+    ("She returned the library books and walked home through the park.", 2),
 ]
 
 cliffhanger_path = os.path.join(OUTPUT_DIR, 'cliffhanger_dataset.csv')
@@ -200,5 +215,4 @@ with open(cliffhanger_path, 'w', newline='', encoding='utf-8') as f:
 print(f"[✓] Cliffhanger dataset generated: {len(CLIFFHANGER_DATA)} samples → {cliffhanger_path}")
 print()
 print("Next steps:")
-print("  python training/finetune_sentence_transformer.py")
 print("  python training/train_cliffhanger_classifier.py")

@@ -54,14 +54,13 @@ const EpisodeDashboard = ({ episodes }) => {
           <div
             key={idx}
             onClick={() => handleAnalyze(ep)}
-            className={`p-4 rounded-lg cursor-pointer transition-all border ${
-              selectedEp === ep
+            className={`p-4 rounded-lg cursor-pointer transition-all border ${selectedEp === ep
                 ? 'bg-blue-900 border-blue-500'
                 : 'bg-gray-800 border-gray-700 hover:bg-gray-750'
-            }`}
+              }`}
           >
-            <h3 className="font-bold text-white">Ep {idx + 1}: {ep.title}</h3>
-            <p className="text-sm text-gray-400 mt-1 line-clamp-2">{ep.synopsis}</p>
+            <h3 className="font-bold text-gray-900 leading-tight">{ep.title !== "Uploaded Script" ? `Ep ${idx + 1}: ${ep.title}` : ep.title}</h3>
+            <p className="text-sm text-gray-600 mt-1 line-clamp-2">{ep.synopsis}</p>
           </div>
         ))}
       </div>
@@ -81,11 +80,10 @@ const EpisodeDashboard = ({ episodes }) => {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`px-5 py-2.5 text-sm font-semibold rounded-t-lg transition-all border-b-2 ${
-                    activeTab === tab.id
+                  className={`px-5 py-2.5 text-sm font-semibold rounded-t-lg transition-all border-b-2 ${activeTab === tab.id
                       ? 'text-white border-violet-500 bg-gray-800'
                       : 'text-gray-400 border-transparent hover:text-white hover:bg-gray-800/50'
-                  }`}
+                    }`}
                 >
                   {tab.label}
                 </button>
@@ -193,4 +191,3 @@ const EpisodeDashboard = ({ episodes }) => {
 };
 
 export default EpisodeDashboard;
-

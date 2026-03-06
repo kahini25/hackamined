@@ -36,7 +36,7 @@ const CharacterGraph = ({ data }) => {
 
         // Draw Nodes
         const node = g.append("g")
-            .attr("stroke", "#1F2937") // text-gray-800
+            .attr("stroke", "#D1D5DB") // text-gray-300
             .attr("stroke-width", 2)
             .selectAll("circle")
             .data(data.interaction_graph.nodes)
@@ -53,7 +53,7 @@ const CharacterGraph = ({ data }) => {
             .attr("dy", -20) // Above the node
             .attr("text-anchor", "middle")
             .text(d => d.id)
-            .attr("fill", "#E5E7EB") // text-gray-200
+            .attr("fill", "#4B5563") // text-gray-600
             .attr("font-size", "12px")
             .attr("font-weight", "500")
             .attr("pointer-events", "none");
@@ -109,16 +109,16 @@ const CharacterGraph = ({ data }) => {
 
     if (!data || !data.interaction_graph?.nodes || data.interaction_graph.nodes.length === 0) {
         return (
-            <div className="bg-gray-800 p-4 rounded-lg border border-gray-700 h-full flex flex-col justify-center items-center text-gray-500 text-sm">
-                <h3 className="text-gray-400 text-sm mb-2 uppercase tracking-wider w-full text-left">Character Graph</h3>
+            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 h-full flex flex-col justify-center items-center text-gray-500 text-sm">
+                <h3 className="text-gray-500 font-semibold text-sm mb-2 uppercase tracking-wider w-full text-left">Character Graph</h3>
                 <p>No character interactions detected in this segment.</p>
             </div>
         );
     }
 
     return (
-        <div className="bg-gray-800 p-4 rounded-lg border border-gray-700 h-full">
-            <h3 className="text-gray-400 text-sm mb-2 uppercase tracking-wider">Character Interactions</h3>
+        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 h-full">
+            <h3 className="text-gray-500 font-semibold text-sm mb-2 uppercase tracking-wider">Character Interactions</h3>
             <div className="flex justify-center w-full">
                 <svg ref={svgRef} viewBox="0 0 400 300" className="w-full h-auto max-w-sm"></svg>
             </div>
