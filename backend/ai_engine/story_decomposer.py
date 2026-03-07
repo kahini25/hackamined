@@ -106,3 +106,102 @@ def extract_propp_characters(text: str, characters: list) -> dict:
              mapping[char] = "Unassigned"
              
     return mapping
+
+def divide_into_episodes(text: str, max_episodes: int = 7, max_words_per_ep: int = 225) -> dict:
+    """
+    Splits the script into up to max_episodes parts.
+    Each part is constrained to roughly max_words_per_ep (~90 seconds of V/O).
+    It splits at the highest cliffhanger score within that window limits.
+    """
+    from . import cliffhanger, emotion
+    import re
+
+    blocks = [b.strip() for b in re.split(r'\n\s*\n', text) if len(b.strip()) > 10]
+    
+    if not blocks:
+        return {"episodes": [], "is_truncated": False}
+        
+    episodes = []
+    current_block_idx = 0
+    total_blocks = len(blocks)
+    
+    while current_block_idx < total_blocks and len(episodes) < max_episodes - 1:
+        window_blocks = []
+        window_words = 0
+        potential_breaks = []
+        
+        for i in range(current_block_idx, total_blocks):
+            blk = blocks[i]
+            blk_words = len(blk.split())
+            
+            # If adding this block exceeds the limit (and we already have at least one block)
+            if window_words + blk_words > max_words_per_ep and len(window_blocks) > 0:
+                break
+                
+            window_blocks.append(blk)
+            window_words += blk_words
+            
+            # Evaluate cliffhanger score if we cut here
+            segment_so_far = " ".join(blocks[current_block_idx : i + 1])
+            try:
+               seg_emotion = emotion.analyze_emotional_arc(segment_so_far)
+               score = cliffhanger.calculate_score(segment_so_far, seg_emotion)
+            except Exception:
+               score = cliffhanger.calculate_score(segment_so_far, None)
+               
+            potential_breaks.append({
+                "split_after_index": i,
+                "score": score
+            })
+            
+        if not potential_breaks:
+            break
+            
+        # If we reached the end of the text, let the final episode logic handle it
+        if potential_breaks[-1]["split_after_index"] == total_blocks - 1:
+             break 
+            
+        # Find the best break in this window
+        best_break = max(potential_breaks, key=lambda x: x["score"])
+        
+        # Construct the episode
+        ep_blocks = blocks[current_block_idx : best_break["split_after_index"] + 1]
+        ep_text = "\n\n".join(ep_blocks)
+        
+        episodes.append({
+            "episode_number": len(episodes) + 1,
+            "text": ep_text,
+            "cliffhanger_score_at_end": round(float(best_break["score"]), 2),
+            "duration_seconds": int(len(ep_text.split()) / 2.5)
+        })
+        
+        current_block_idx = best_break["split_after_index"] + 1
+
+    # Final episode construction
+    remaining_blocks = blocks[current_block_idx:]
+    if remaining_blocks:
+        final_blocks = []
+        final_words = 0
+        for blk in remaining_blocks:
+            blk_words = len(blk.split())
+            if final_words + blk_words > max_words_per_ep and len(final_blocks) > 0:
+                break
+            final_blocks.append(blk)
+            final_words += blk_words
+            
+        final_text = "\n\n".join(final_blocks)
+        episodes.append({
+            "episode_number": len(episodes) + 1,
+            "text": final_text,
+            "cliffhanger_score_at_end": 0.0,
+            "duration_seconds": int(len(final_text.split()) / 2.5)
+        })
+        
+        current_block_idx += len(final_blocks)
+
+    is_truncated = current_block_idx < total_blocks
+
+    return {
+        "episodes": episodes,
+        "is_truncated": is_truncated
+    }

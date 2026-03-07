@@ -25,7 +25,13 @@ class Episode(BaseModel):
     
 class ArcResponse(BaseModel):
     episodes: List[Episode]
-    
+
+class EpisodeBreakdown(BaseModel):
+    episode_number: int
+    text: str
+    cliffhanger_score_at_end: float
+    duration_seconds: Optional[int] = None
+
 class AnalyticsResponse(BaseModel):
     pacing_curve: List[float]
     emotional_arc: List[Dict[str, Any]]
@@ -37,6 +43,8 @@ class AnalyticsResponse(BaseModel):
     tension_graph: Dict[str, Any]
     scroll_stop_score: float
     narrative_dna: Optional[Dict[str, Any]] = None
+    episodes: Optional[List[EpisodeBreakdown]] = None
+    is_truncated: Optional[bool] = False
 
 # ── Video Generation Schemas ──────────────────────────────────────────────────
 

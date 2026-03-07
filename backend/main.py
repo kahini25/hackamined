@@ -11,7 +11,7 @@ load_dotenv()
 import json
 
 # Import our AI modules
-from ai_engine import emotion, cliffhanger
+from ai_engine import emotion, cliffhanger, story_decomposer
 from ai_engine.aggregator import NarrativeDNAAggregator
 from models.schemas import (
     StoryRequest, ArcResponse, AnalysisRequest, AnalyticsResponse,
@@ -93,6 +93,28 @@ async def analyze_story(request: AnalysisRequest):
     analysis_data = aggregator.analyze_story(script)
 
     return AnalyticsResponse(**analysis_data)
+
+@app.post("/split_episodes", response_model=ArcResponse)
+async def split_episodes(request: AnalysisRequest):
+    script = request.script_text
+    
+    try:
+        episode_result = story_decomposer.divide_into_episodes(script, max_episodes=7)
+        episodes_data = episode_result.get("episodes", [])
+        
+        episodes = []
+        for ep in episodes_data:
+            episodes.append(Episode(
+                title=f"Episode {ep.get('episode_number')}",
+                synopsis=f"Analyzed {ep.get('duration_seconds')}s Segment (Cliffhanger tension: {ep.get('cliffhanger_score_at_end')}/100)",
+                script_segment=ep.get('text')
+            ))
+            
+        return ArcResponse(episodes=episodes)
+    except Exception as e:
+        print(f"Error splitting episodes: {e}")
+        from fastapi import HTTPException
+        raise HTTPException(status_code=500, detail="Failed to split script into episodes.")
 
 @app.post("/improve_cliffhanger", response_model=ImprovementResponse)
 async def improve_cliffhanger(request: ImprovementRequest):

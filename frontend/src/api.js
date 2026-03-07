@@ -12,6 +12,11 @@ export const analyzeStory = async (script_text) => {
     return response.data;
 };
 
+export const splitEpisodes = async (script_text) => {
+    const response = await axios.post(`${API_URL}/split_episodes`, { script_text });
+    return response.data;
+};
+
 export const improveCliffhanger = async (script_text) => {
     const response = await axios.post(`${API_URL}/improve_cliffhanger`, { script_text });
     return response.data;

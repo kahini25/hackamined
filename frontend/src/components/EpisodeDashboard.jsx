@@ -163,6 +163,30 @@ const EpisodeDashboard = ({ episodes }) => {
               {selectedEp.script_segment}
             </div>
           </div>
+
+          {!loading && analytics?.episodes && analytics.episodes.length > 1 && (
+            <div className="bg-white border border-[#f0f0f0] p-6 rounded-2xl shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-700">
+              <h3 className="text-[10px] font-mono text-black font-bold uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+                Auto-Generated Episodes ({analytics.episodes.length})
+              </h3>
+              <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+                {analytics.episodes.map((subEp) => (
+                  <div key={subEp.episode_number} className="p-4 border border-[#f0f0f0] rounded-xl bg-[#fafafa]">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-xs font-bold text-black uppercase tracking-widest">Episode {subEp.episode_number}</span>
+                      <span className="text-[10px] bg-black text-white px-2 py-0.5 rounded-full font-mono">
+                         Cliffhanger Score: {subEp.cliffhanger_score_at_end}
+                      </span>
+                    </div>
+                    <div className="font-mono text-xs text-gray-500 whitespace-pre-wrap leading-relaxed">
+                      {subEp.text}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Right Column: Analytics */}
