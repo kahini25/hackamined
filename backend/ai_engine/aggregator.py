@@ -37,7 +37,7 @@ class NarrativeDNAAggregator:
             drop_off = {}
 
         try:
-            scroll_score = retention.predict_scroll_stop(story_text)
+            scroll_score = retention.predict_scroll_stop(story_text, retention_data=drop_off)
         except Exception as e:
             print(f"Error in scroll stop prediction: {e}")
             scroll_score = 0.0
@@ -98,6 +98,15 @@ class NarrativeDNAAggregator:
         except Exception as e:
             print(f"Error in Propp character extraction: {e}")
             propp_roles = {}
+            
+        try:
+            episode_result = story_decomposer.divide_into_episodes(story_text, max_episodes=7)
+            episodes_data = episode_result.get("episodes", [])
+            is_truncated = episode_result.get("is_truncated", False)
+        except Exception as e:
+            print(f"Error in episode subdivision: {e}")
+            episodes_data = []
+            is_truncated = False
 
         # Structure the final output
         result = {
@@ -112,7 +121,9 @@ class NarrativeDNAAggregator:
             "scroll_stop_score": scroll_score,
             "narrative_dna": narrative_dna_fingerprint,
             "todorov_stage": todorov_stage,
-            "propp_characters": propp_roles
+            "propp_characters": propp_roles,
+            "episodes": episodes_data,
+            "is_truncated": is_truncated
         }
         
         return result

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import StoryInput from './components/StoryInput';
 import EpisodeDashboard from './components/EpisodeDashboard';
-import { generateArc } from './api';
+import { generateArc, splitEpisodes } from './api';
 
 function App() {
   const [episodes, setEpisodes] = useState([]);
@@ -19,14 +19,16 @@ function App() {
     setLoading(false);
   };
 
-  const handleUpload = (scriptText) => {
-    // Treat the uploaded script as one single "Episode" segment
-    const uploadedEp = {
-      title: "Uploaded Script",
-      synopsis: "Custom script uploaded for direct analysis.",
-      script_segment: scriptText
-    };
-    setEpisodes([uploadedEp]);
+  const handleUpload = async (scriptText) => {
+    setLoading(true);
+    try {
+      const data = await splitEpisodes(scriptText);
+      setEpisodes(data.episodes);
+    } catch (error) {
+      const msg = error?.response?.data?.detail || error?.message || "Unknown error";
+      alert(`⚠️ Script splitting failed:\n\n${msg}`);
+    }
+    setLoading(false);
   };
 
   const handleReset = () => {

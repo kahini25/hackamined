@@ -1,5 +1,6 @@
 import os
 import torch
+import pickle
 import warnings
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
@@ -26,6 +27,20 @@ if os.path.exists(_MODEL_PATH):
         _model = None
 else:
     print("[retention] No transformer model found. Using heuristic fallback.")
+
+_scroll_model_path = os.path.join(_BASE_DIR, 'models', 'scroll_stop_model.pkl')
+_scroll_model = None
+
+if os.path.exists(_scroll_model_path):
+    try:
+        with open(_scroll_model_path, 'rb') as f:
+            _scroll_payload = pickle.load(f)
+            _scroll_model = _scroll_payload['model']
+        print(f"[scroll_stop] Loaded trained GradientBoosting model from {_scroll_model_path}")
+    except Exception as e:
+        print(f"[scroll_stop] Failed to load model ({e}). Using heuristic fallback.")
+else:
+    print("[scroll_stop] No model found. Using heuristic fallback.")
 
 def predict_drop_off(text):
     """
@@ -114,16 +129,42 @@ def _heuristic_risk(segment_text, local_emotion_arc, local_tension):
     
     return max(0.0, min(1.0, 1.0 - engagement_score))
 
-def predict_scroll_stop(text):
+def predict_scroll_stop(text, retention_data=None):
     """
-    Original scroll stop logic preserved to act as hook strength.
+    Predict scroll stop probability.
+    If retention_data (heatmap) is provided and model is loaded, uses the trained ML model.
+    Otherwise, falls back to the original text-based heuristic.
     """
     hook = text[:150].lower()
+    hook_exclamation = 1.0 if '!' in hook else 0.0
+
+    # Try ML model first
+    if _scroll_model is not None and retention_data is not None:
+        try:
+            segments = retention_data.get("segments", [])
+            if len(segments) == 4:
+                risk_0_15 = segments[0].get("drop_off_risk", 0.5)
+                risk_15_30 = segments[1].get("drop_off_risk", 0.5)
+                risk_30_60 = segments[2].get("drop_off_risk", 0.5)
+                risk_60_90 = segments[3].get("drop_off_risk", 0.5)
+                engagement_score = retention_data.get("engagement_score", 0.5)
+                word_count = len(text.split())
+                
+                features = [[
+                    risk_0_15, risk_15_30, risk_30_60, risk_60_90,
+                    engagement_score, word_count, hook_exclamation
+                ]]
+                
+                pred = _scroll_model.predict(features)[0]
+                return round(float(max(0.0, min(100.0, pred))), 2)
+        except Exception as e:
+            print(f"[scroll_stop] ML prediction failed: {e}. Falling back to heuristic.")
+            
+    # Fallback to heuristic
     score = 50
-    
     triggers = ['suddenly', '!', 'blood', 'kiss', 'money', 'secret', 'die', 'kill']
     for t in triggers:
         if t in hook:
             score += 15
             
-    return min(score, 100)
+    return round(min(score, 100),2)
