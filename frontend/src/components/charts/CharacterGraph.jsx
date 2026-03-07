@@ -27,22 +27,25 @@ const CharacterGraph = ({ data }) => {
 
         // Draw Links (edges)
         const link = g.append("g")
-            .attr("stroke", "#eee")
-            .attr("stroke-opacity", 0.8)
+            .attr("stroke", "#d8cfc4")
+            .attr("stroke-opacity", 0.7)
             .selectAll("line")
             .data(data.interaction_graph.edges)
             .join("line")
             .attr("stroke-width", d => Math.max(1, d.weight * 1.5)); // Scale edge thickness by weight
 
-        // Draw Nodes
+        // Warm, muted palette — terracotta, sage, dusty blue, amber, mauve, teal
+        const palette = ['#b87060', '#7a9e7e', '#7a8fa8', '#c4955a', '#9b7fa8', '#5f9ea0'];
+        const colorScale = d3.scaleOrdinal(palette);
+
         const node = g.append("g")
-            .attr("stroke", "#fff")
-            .attr("stroke-width", 2)
+            .attr("stroke", "#faf7f2")
+            .attr("stroke-width", 2.5)
             .selectAll("circle")
             .data(data.interaction_graph.nodes)
             .join("circle")
             .attr("r", 12)
-            .attr("fill", "#000") // Black for nodes in light theme
+            .attr("fill", d => colorScale(d.group ?? d.id))
             .call(drag(simulation));
 
         // Draw Text Labels
@@ -68,8 +71,8 @@ const CharacterGraph = ({ data }) => {
                 .attr("y2", d => d.target.y);
 
             node
-                .attr("cx", d => d.x = Math.max(15, Math.min(width - 15, d.x)))
-                .attr("cy", d => d.y = Math.max(15, Math.min(height - 15, d.y)));
+                .attr("cx", d => d.x = Math.max(40, Math.min(width - 40, d.x)))
+                .attr("cy", d => d.y = Math.max(40, Math.min(height - 20, d.y)));
 
             labels
                 .attr("x", d => d.x)
@@ -119,7 +122,7 @@ const CharacterGraph = ({ data }) => {
     return (
         <div className="w-full h-full">
             <div className="flex justify-center w-full">
-                <svg ref={svgRef} viewBox="0 0 400 300" className="w-full h-auto max-w-sm"></svg>
+                <svg ref={svgRef} viewBox="0 0 400 300" className="w-full h-auto max-w-sm" overflow="visible"></svg>
             </div>
         </div>
     );

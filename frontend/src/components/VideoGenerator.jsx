@@ -11,29 +11,29 @@ const FALLBACK_OPTIONS = {
 // Style display labels
 const STYLE_LABELS = {
   shot_styles: {
-    close_up: '🔍 Close-Up',
-    wide_shot: '🌅 Wide Shot',
-    tracking_shot: '🎥 Tracking Shot',
-    drone: '🚁 Drone',
-    dutch_angle: '📐 Dutch Angle',
-    over_shoulder: '👥 Over-Shoulder',
+    close_up: 'Close-Up',
+    wide_shot: 'Wide Shot',
+    tracking_shot: 'Tracking Shot',
+    drone: 'Drone',
+    dutch_angle: 'Dutch Angle',
+    over_shoulder: 'Over-Shoulder',
   },
   cinematic_styles: {
-    neon_noir: '🌆 Neon Noir',
-    golden_hour: '🌇 Golden Hour',
-    desaturated: '🖤 Desaturated',
-    high_contrast_bw: '⬛ High Contrast B&W',
-    vibrant_pop: '🎨 Vibrant Pop',
-    earth_tones: '🍂 Earth Tones',
-    teal_orange: '🎬 Teal & Orange',
+    neon_noir: 'Neon Noir',
+    golden_hour: 'Golden Hour',
+    desaturated: 'Desaturated',
+    high_contrast_bw: 'High Contrast B&W',
+    vibrant_pop: 'Vibrant Pop',
+    earth_tones: 'Earth Tones',
+    teal_orange: 'Teal & Orange',
   },
   moods: {
-    thriller: '😰 Thriller',
-    drama: '🎭 Drama',
-    action: '💥 Action',
-    romance: '💕 Romance',
-    mystery: '🔮 Mystery',
-    sci_fi: '🚀 Sci-Fi',
+    thriller: 'Thriller',
+    drama: 'Drama',
+    action: 'Action',
+    romance: 'Romance',
+    mystery: 'Mystery',
+    sci_fi: 'Sci-Fi',
   },
 };
 
@@ -44,11 +44,11 @@ const SelectGrid = ({ options, labelMap, value, onChange, disabled }) => (
         key={opt}
         onClick={() => onChange(opt)}
         disabled={disabled}
-        className={`py-2 px-3 rounded-lg text-sm font-medium transition-all border ${
-          value === opt
-            ? 'bg-black border-black text-white shadow-md'
-            : 'bg-white border-[#f0f0f0] text-gray-600 hover:border-black/20 hover:text-black'
-        } disabled:opacity-50 disabled:cursor-not-allowed`}
+        className={`py-2 px-3 rounded-lg text-sm font-medium transition-all border ${value === opt
+          ? 'border-[#b8b0a4] text-[#2c2520]'
+          : 'border-[#e8e2d8] text-[#9c9088] hover:border-[#b8b0a4] hover:text-[#2c2520]'
+          } disabled:opacity-50 disabled:cursor-not-allowed`}
+        style={value === opt ? { backgroundColor: '#e0d8cc' } : { backgroundColor: '#faf7f2' }}
       >
         {labelMap?.[opt] || opt}
       </button>
@@ -57,8 +57,8 @@ const SelectGrid = ({ options, labelMap, value, onChange, disabled }) => (
 );
 
 const SectionTitle = ({ children }) => (
-  <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-    <span className="w-1.5 h-1.5 bg-black rounded-full"></span> {children}
+  <h4 className="text-xs font-light text-[#9c9088] uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+    <span className="w-1.5 h-1.5 bg-[#c8bfb0] rounded-full"></span> {children}
   </h4>
 );
 
@@ -167,8 +167,8 @@ export default function VideoGenerator({ episode, genre = 'drama' }) {
   const TOTAL_CLIPS = mode === 'preview' ? 1 : 18;
   const progressPct = generationState === 'done' ? 100
     : generationState === 'polling' ? Math.max(5, Math.round((clipsReady / TOTAL_CLIPS) * 100))
-    : generationState === 'started' ? 3
-    : 0;
+      : generationState === 'started' ? 3
+        : 0;
 
   const isGenerating = generationState === 'started' || generationState === 'polling';
 
@@ -187,7 +187,7 @@ export default function VideoGenerator({ episode, genre = 'drama' }) {
       <div className="mb-6 bg-white border border-[#f0f0f0] rounded-2xl p-6 shadow-sm hover:border-black/10 transition-colors">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h3 className="text-sm font-bold text-black uppercase tracking-widest mb-1">✨ AI Style Predictor</h3>
+            <h3 className="text-sm font-bold text-black uppercase tracking-widest mb-1">AI Style Predictor</h3>
             <p className="text-sm text-gray-500">
               Let our models analyze your script and auto-suggest the optimal cinematic parameters.
             </p>
@@ -195,12 +195,13 @@ export default function VideoGenerator({ episode, genre = 'drama' }) {
           <button
             onClick={handleSuggest}
             disabled={suggesting || !episode}
-            className="px-6 py-2.5 bg-black hover:bg-gray-800 rounded-full text-sm font-bold text-white transition-all shadow-lg disabled:opacity-50 whitespace-nowrap flex items-center justify-center gap-2"
+            className="px-6 py-2.5 rounded-full text-sm font-bold transition-all shadow-sm disabled:opacity-50 whitespace-nowrap flex items-center justify-center gap-2"
+            style={{ backgroundColor: '#2c2520', color: '#f5f0e8' }}
           >
             {suggesting ? (
               <><div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" /> Analyzing...</>
             ) : (
-              '🔮 Predict Best Style'
+              'Predict Best Style'
             )}
           </button>
         </div>
@@ -208,7 +209,7 @@ export default function VideoGenerator({ episode, genre = 'drama' }) {
         {suggestion && (
           <div className="mt-6 bg-[#fafafa] border border-[#f0f0f0] rounded-xl p-5 animate-in fade-in slide-in-from-top-2">
             <p className="text-xs text-black font-bold uppercase tracking-widest mb-3 flex items-center gap-2">
-               <span className="w-1.5 h-1.5 bg-black rounded-full"></span> AI Recommendation Applied
+              <span className="w-1.5 h-1.5 bg-black rounded-full"></span> AI Recommendation Applied
             </p>
             <p className="text-sm text-gray-600 italic leading-relaxed">"{suggestion.suggested.reasoning}"</p>
             {suggestion.alternatives?.length > 0 && (
@@ -234,7 +235,7 @@ export default function VideoGenerator({ episode, genre = 'drama' }) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         {/* Shot Style */}
         <div className="bg-white border border-[#f0f0f0] rounded-2xl p-6">
-          <SectionTitle>📷 Shot Style</SectionTitle>
+          <SectionTitle>Shot Style</SectionTitle>
           <SelectGrid
             options={styleOptions.shot_styles}
             labelMap={STYLE_LABELS.shot_styles}
@@ -246,7 +247,7 @@ export default function VideoGenerator({ episode, genre = 'drama' }) {
 
         {/* Cinematic Style */}
         <div className="bg-white border border-[#f0f0f0] rounded-2xl p-6">
-          <SectionTitle>🎨 Color Palette & Look</SectionTitle>
+          <SectionTitle>Color Palette & Look</SectionTitle>
           <SelectGrid
             options={styleOptions.cinematic_styles}
             labelMap={STYLE_LABELS.cinematic_styles}
@@ -258,7 +259,7 @@ export default function VideoGenerator({ episode, genre = 'drama' }) {
 
         {/* Mood */}
         <div className="bg-white border border-[#f0f0f0] rounded-2xl p-6">
-          <SectionTitle>🎭 Mood & Atmosphere</SectionTitle>
+          <SectionTitle>Mood & Atmosphere</SectionTitle>
           <SelectGrid
             options={styleOptions.moods}
             labelMap={STYLE_LABELS.moods}
@@ -270,18 +271,18 @@ export default function VideoGenerator({ episode, genre = 'drama' }) {
 
         {/* Resolution + Summary */}
         <div className="bg-white border border-[#f0f0f0] rounded-2xl p-6 flex flex-col">
-          <SectionTitle>⚡ Resolution</SectionTitle>
+          <SectionTitle>Resolution</SectionTitle>
           <div className="flex gap-3 mb-4">
             {['480p', '720p'].map(r => (
               <button
                 key={r}
                 onClick={() => setResolution(r)}
                 disabled={generationState === 'polling'}
-                className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all border ${
-                  resolution === r
-                    ? 'bg-black border-black text-white shadow-md'
-                    : 'bg-white border-[#f0f0f0] text-gray-500 hover:border-black/20 hover:text-black'
-                } disabled:opacity-50`}
+                className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all border ${resolution === r
+                  ? 'border-[#b8b0a4] text-[#2c2520]'
+                  : 'border-[#e8e2d8] text-[#9c9088] hover:border-[#b8b0a4] hover:text-[#2c2520]'
+                  } disabled:opacity-50`}
+                style={{ backgroundColor: resolution === r ? '#e0d8cc' : '#faf7f2' }}
               >
                 {r}
               </button>
@@ -307,42 +308,44 @@ export default function VideoGenerator({ episode, genre = 'drama' }) {
             </div>
           </div>
         </div>
-        
+
         {/* Generation Mode */}
         <div className="bg-white border border-[#f0f0f0] rounded-2xl p-6 flex flex-col md:col-span-2">
-          <SectionTitle>🎞 Generation Mode</SectionTitle>
+          <SectionTitle>Generation Mode</SectionTitle>
           <div className="flex flex-col sm:flex-row gap-4">
             <button
               onClick={() => setMode('preview')}
               disabled={generationState === 'polling'}
-              className={`flex-1 py-5 px-6 rounded-xl text-left transition-all border ${
-                mode === 'preview'
-                  ? 'bg-[#fafafa] border-black shadow-sm'
-                  : 'bg-white border-[#f0f0f0] hover:border-black/30'
-              } disabled:opacity-50`}
+              className={`flex-1 py-5 px-6 rounded-xl text-left transition-all border ${mode === 'preview'
+                ? 'border-[#b8b0a4]'
+                : 'border-[#e8e2d8] hover:border-[#b8b0a4]'
+                } disabled:opacity-50`}
+              style={{ backgroundColor: mode === 'preview' ? '#e8e2d8' : '#faf7f2' }}
             >
               <div className="flex items-center gap-3 mb-2">
-                <div className={`p-2 rounded-full ${mode === 'preview' ? 'bg-black text-white' : 'bg-[#f0f0f0] text-gray-400'}`}>
+                <div className={`p-2 rounded-full ${mode === 'preview' ? 'text-[#2c2520]' : 'text-[#9c9088]'}`}
+                  style={{ backgroundColor: mode === 'preview' ? '#c8bfb0' : '#ece8e0' }}>
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                 </div>
-                <div className={`font-bold text-lg ${mode === 'preview' ? 'text-black' : 'text-gray-600'}`}>3-Second Style Preview</div>
+                <div className={`font-bold text-lg ${mode === 'preview' ? 'text-[#2c2520]' : 'text-[#9c9088]'}`}>3-Second Style Preview</div>
               </div>
               <div className="text-sm font-medium text-gray-500 pl-11">Lightning fast. Renders 1 scene to verify your aesthetic.</div>
             </button>
             <button
               onClick={() => setMode('full')}
               disabled={generationState === 'polling'}
-              className={`flex-1 py-5 px-6 rounded-xl text-left transition-all border ${
-                mode === 'full'
-                  ? 'bg-[#fafafa] border-black shadow-sm'
-                  : 'bg-white border-[#f0f0f0] hover:border-black/30'
-              } disabled:opacity-50`}
+              className={`flex-1 py-5 px-6 rounded-xl text-left transition-all border ${mode === 'full'
+                ? 'border-[#b8b0a4]'
+                : 'border-[#e8e2d8] hover:border-[#b8b0a4]'
+                } disabled:opacity-50`}
+              style={{ backgroundColor: mode === 'full' ? '#e8e2d8' : '#faf7f2' }}
             >
               <div className="flex items-center gap-3 mb-2">
-                <div className={`p-2 rounded-full ${mode === 'full' ? 'bg-black text-white' : 'bg-[#f0f0f0] text-gray-400'}`}>
+                <div className={`p-2 rounded-full ${mode === 'full' ? 'text-[#2c2520]' : 'text-[#9c9088]'}`}
+                  style={{ backgroundColor: mode === 'full' ? '#c8bfb0' : '#ece8e0' }}>
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" /></svg>
                 </div>
-                <div className={`font-bold text-lg ${mode === 'full' ? 'text-black' : 'text-gray-600'}`}>90-Second Full Episode</div>
+                <div className={`font-bold text-lg ${mode === 'full' ? 'text-[#2c2520]' : 'text-[#9c9088]'}`}>90-Second Full Episode</div>
               </div>
               <div className="text-sm font-medium text-gray-500 pl-11">Processes 18 distinct script scenes. Takes roughly 6 minutes.</div>
             </button>
@@ -354,17 +357,17 @@ export default function VideoGenerator({ episode, genre = 'drama' }) {
       <button
         onClick={handleGenerate}
         disabled={isGenerating || !episode}
-        className={`w-full py-5 rounded-2xl font-bold text-white text-lg transition-all shadow-lg flex items-center justify-center gap-3 ${
-          isGenerating
-            ? 'bg-gray-300 cursor-wait text-gray-600 shadow-none'
-            : 'bg-black hover:bg-gray-800 hover:-translate-y-0.5'
-        } disabled:opacity-60 disabled:cursor-not-allowed`}
+        className={`w-full py-5 rounded-2xl font-bold text-lg transition-all shadow-md flex items-center justify-center gap-3 ${isGenerating
+          ? 'cursor-wait shadow-none'
+          : 'hover:-translate-y-0.5'
+          } disabled:opacity-60 disabled:cursor-not-allowed`}
+        style={{ backgroundColor: isGenerating ? '#c8bfb0' : '#2c2520', color: isGenerating ? '#6b6560' : '#f5f0e8' }}
       >
         {generationState === 'done'
           ? <><svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg> Video Ready!</>
           : isGenerating
-          ? <><div className="w-5 h-5 border-2 border-gray-500 border-t-gray-800 rounded-full animate-spin" /> Generating Clip {clipsReady}/{TOTAL_CLIPS}...</>
-          : <><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> Generate {mode === 'preview' ? '3s Style Preview' : '90s Full Episode'}</>}
+            ? <><div className="w-5 h-5 border-2 border-gray-500 border-t-gray-800 rounded-full animate-spin" /> Generating Clip {clipsReady}/{TOTAL_CLIPS}...</>
+            : <><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> Generate {mode === 'preview' ? '3s Style Preview' : '90s Full Episode'}</>}
       </button>
 
       {/* Progress Bar — visible immediately on click */}
@@ -375,18 +378,17 @@ export default function VideoGenerator({ episode, genre = 'drama' }) {
               {generationState === 'done'
                 ? 'Generation Complete'
                 : generationState === 'started'
-                ? 'Connecting to Wan2.1 Engine...'
-                : `Rendering Cinematic Sequence (${clipsReady}/${TOTAL_CLIPS})`}
+                  ? 'Connecting to Wan2.1 Engine...'
+                  : `Rendering Cinematic Sequence (${clipsReady}/${TOTAL_CLIPS})`}
             </span>
             <span className="font-black text-black text-xl">{progressPct}%</span>
           </div>
           <div className="h-2 bg-[#f0f0f0] rounded-full overflow-hidden">
             <div
-              className={`h-full rounded-full transition-all duration-1000 ${
-                generationState === 'done'
-                  ? 'bg-black'
-                  : 'bg-black relative overflow-hidden'
-              }`}
+              className={`h-full rounded-full transition-all duration-1000 ${generationState === 'done'
+                ? 'bg-black'
+                : 'bg-black relative overflow-hidden'
+                }`}
               style={{ width: `${progressPct}%` }}
             >
               {isGenerating && (

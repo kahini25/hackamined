@@ -29,12 +29,30 @@ const EmotionalArcChart = ({ data }) => {
       .y(d => y(d.score))
       .curve(d3.curveMonotoneX);
 
+    // Gradient definition
+    const defs = svg.append("defs");
+    const gradient = defs.append("linearGradient")
+      .attr("id", "emotional-gradient")
+      .attr("x1", "0%")
+      .attr("y1", "0%")
+      .attr("x1", "0%")
+      .attr("y2", "100%");
+
+    // High sentiment (Top) -> Warm Terracotta
+    gradient.append("stop").attr("offset", "0%").attr("stop-color", "#b87060");
+    // Center -> Neutral
+    gradient.append("stop").attr("offset", "50%").attr("stop-color", "#d8cfc4");
+    // Low sentiment (Bottom) -> Dusty Blue
+    gradient.append("stop").attr("offset", "100%").attr("stop-color", "#7a8fa8");
+
     // Draw Line
     svg.append("path")
       .datum(data)
       .attr("fill", "none")
-      .attr("stroke", "#60A5FA") // Tailwind blue-400
+      .attr("stroke", "url(#emotional-gradient)")
       .attr("stroke-width", 3)
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
       .attr("d", line);
 
     // Add Area under line
@@ -46,32 +64,26 @@ const EmotionalArcChart = ({ data }) => {
 
     svg.append("path")
       .datum(data)
-      .attr("fill", "url(#gradient)")
-      .attr("opacity", 0.3)
+      .attr("fill", "url(#emotional-gradient)")
+      .attr("opacity", 0.15)
       .attr("d", area);
 
-    // Gradient definition
-    const defs = svg.append("defs");
-    const gradient = defs.append("linearGradient")
-      .attr("id", "gradient")
-      .attr("x1", "0%")
-      .attr("y1", "0%")
-      .attr("x2", "0%")
-      .attr("y2", "100%");
-
-    gradient.append("stop").attr("offset", "0%").attr("stop-color", "#60A5FA");
-    gradient.append("stop").attr("offset", "100%").attr("stop-color", "transparent");
-
     // Axes
-    svg.append("g")
+    const xAxis = svg.append("g")
       .attr("transform", `translate(0,${height - margin.bottom})`)
-      .call(d3.axisBottom(x).ticks(5).tickFormat(d => `Beat ${d}`))
-      .attr("color", "#eaeaea");
+      .call(d3.axisBottom(x).ticks(5).tickFormat(d => `Beat ${d}`));
 
-    svg.append("g")
+    xAxis.select(".domain").attr("stroke", "#e8e2d8");
+    xAxis.selectAll(".tick line").attr("stroke", "#e8e2d8");
+    xAxis.selectAll(".tick text").attr("fill", "#9c9088").attr("font-size", "9px").attr("font-family", "font-mono");
+
+    const yAxis = svg.append("g")
       .attr("transform", `translate(${margin.left},0)`)
-      .call(d3.axisLeft(y).ticks(3))
-      .attr("color", "#eaeaea");
+      .call(d3.axisLeft(y).ticks(3));
+
+    yAxis.select(".domain").attr("stroke", "#e8e2d8");
+    yAxis.selectAll(".tick line").attr("stroke", "#e8e2d8");
+    yAxis.selectAll(".tick text").attr("fill", "#9c9088").attr("font-size", "9px").attr("font-family", "font-mono");
 
     // Zero line
     svg.append("line")
@@ -79,8 +91,9 @@ const EmotionalArcChart = ({ data }) => {
       .attr("x2", width - margin.right)
       .attr("y1", y(0))
       .attr("y2", y(0))
-      .attr("stroke", "#f0f0f0")
-      .attr("stroke-dasharray", "4");
+      .attr("stroke", "#d8cfc4")
+      .attr("stroke-dasharray", "4,4")
+      .attr("stroke-width", 1);
 
   }, [data]);
 

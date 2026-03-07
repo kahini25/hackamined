@@ -10,12 +10,12 @@ const CliffhangerMeter = ({ score }) => {
 
     if (normalizedScore > 75) {
         statusText = "Extreme Cliffhanger";
-        statusColor = "text-red-500";
-        barColor = "bg-red-500";
+        statusColor = "text-[#b87060]";
+        barColor = "bg-[#b87060]";
     } else if (normalizedScore > 50) {
         statusText = "Solid Hook";
-        statusColor = "text-yellow-500";
-        barColor = "bg-yellow-500";
+        statusColor = "text-[#c4955a]";
+        barColor = "bg-[#c4955a]";
     } else if (normalizedScore > 25) {
         statusText = "Mild Interest";
         statusColor = "text-blue-400";
@@ -24,13 +24,13 @@ const CliffhangerMeter = ({ score }) => {
 
     return (
         <div className="w-full">
-            <h3 className="text-[10px] font-mono text-gray-400 uppercase tracking-[0.2em] mb-6 flex justify-between">
+            <h3 className="text-xs font-light text-[#9c9088] uppercase tracking-[0.2em] mb-6 flex justify-between">
                 Cliffhanger Strength
                 <span className={`font-black ${statusColor}`}>{normalizedScore.toFixed(0)} / 100</span>
             </h3>
 
             <div className="mt-4">
-                <div className="flex justify-between text-[10px] text-gray-400 mb-2 w-full font-mono uppercase tracking-widest">
+                <div className="flex justify-between text-[9px] text-[#9c9088] mb-2 w-full font-light uppercase tracking-[0.2em]">
                     <span>Resolving</span>
                     <span className={`${statusColor} font-bold`}>{statusText}</span>
                     <span>Unresolved</span>

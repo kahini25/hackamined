@@ -37,7 +37,7 @@ const StoryInput = ({ onGenerate, onUpload, isLoading }) => {
   };
 
   return (
-    <div className="relative p-10 bg-white text-gray-900 rounded-3xl shadow-[0_10px_50px_-15px_rgba(0,0,0,0.1)] border border-[#f0f0f0]">
+    <div className="relative px-6 pb-6 pt-2 text-gray-900 rounded-3xl shadow-[0_10px_50px_-15px_rgba(0,0,0,0.06)] border" style={{ backgroundColor: '#faf7f2', borderColor: '#e8e2d8' }}>
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-black/5 to-transparent"></div>
 
       <div className="flex justify-end mb-4">
@@ -45,15 +45,17 @@ const StoryInput = ({ onGenerate, onUpload, isLoading }) => {
       </div>
 
       {/* Tabs */}
-      <div className="flex w-full bg-[#fafafa] p-1.5 rounded-xl mb-8 font-bold text-xs uppercase tracking-widest border border-[#f0f0f0]">
+      <div className="flex w-full p-1.5 rounded-xl mb-4 font-bold text-xs uppercase tracking-widest border" style={{ backgroundColor: '#f0ebe2', borderColor: '#e0d8cc' }}>
         <button
-          className={`flex-1 py-3 px-4 rounded-lg transition-all ${activeTab === 'generate' ? 'bg-white text-black shadow-sm border border-[#f0f0f0]' : 'text-gray-400 hover:text-gray-600'}`}
+          className={`flex-1 py-3 px-4 rounded-lg transition-all ${activeTab === 'generate' ? 'text-[#2c2520] shadow-sm border' : 'hover:text-[#4a4540]'}`}
+          style={activeTab === 'generate' ? { backgroundColor: '#faf7f2', borderColor: '#e0d8cc', color: '#2c2520' } : { color: '#a09890' }}
           onClick={() => setActiveTab('generate')}
         >
           Story Title and Synopsis
         </button>
         <button
-          className={`flex-1 py-3 px-4 rounded-lg transition-all ${activeTab === 'upload' ? 'bg-white text-black shadow-sm border border-[#f0f0f0]' : 'text-gray-400 hover:text-gray-600'}`}
+          className={`flex-1 py-3 px-4 rounded-lg transition-all ${activeTab === 'upload' ? 'text-[#2c2520] shadow-sm border' : 'hover:text-[#4a4540]'}`}
+          style={activeTab === 'upload' ? { backgroundColor: '#faf7f2', borderColor: '#e0d8cc', color: '#2c2520' } : { color: '#a09890' }}
           onClick={() => setActiveTab('upload')}
         >
           Upload Existing Script
@@ -68,7 +70,7 @@ const StoryInput = ({ onGenerate, onUpload, isLoading }) => {
               <select
                 value={genre}
                 onChange={(e) => setGenre(e.target.value)}
-                className="w-full p-4 bg-[#fafafa] rounded-xl border border-[#f0f0f0] focus:border-black/10 outline-none text-black transition-all appearance-none cursor-pointer"
+                className="w-full p-3 rounded-xl border outline-none text-[#2c2520] transition-all appearance-none cursor-pointer" style={{ backgroundColor: '#f5f0e8', borderColor: '#e0d8cc' }}
               >
                 {['Sci-Fi', 'Thriller', 'Romance', 'Horror', 'Fantasy', 'Mystery', 'Drama', 'Comedy'].map(g => (
                   <option key={g} className="bg-white">{g}</option>
@@ -86,14 +88,14 @@ const StoryInput = ({ onGenerate, onUpload, isLoading }) => {
             <textarea
               value={idea}
               onChange={(e) => setIdea(e.target.value)}
-              className="w-full p-5 h-40 bg-[#fafafa] rounded-2xl border border-[#f0f0f0] focus:border-black/10 outline-none text-black placeholder-gray-300 transition-all resize-none text-sm leading-relaxed"
+              className="w-full p-4 h-40 rounded-2xl border outline-none placeholder-[#c0b8b0] transition-all resize-none text-sm leading-relaxed text-[#2c2520]" style={{ backgroundColor: '#f5f0e8', borderColor: '#e0d8cc' }}
               placeholder="A hacker discovers his entire reality is a computer simulation..."
             />
           </div>
           <button
             onClick={() => onGenerate(idea, genre)}
             disabled={isLoading || !idea.trim()}
-            className="w-full py-5 bg-black text-white hover:bg-gray-900 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all flex justify-center items-center disabled:opacity-30 disabled:cursor-not-allowed group shadow-lg"
+            className="w-full py-3 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all flex justify-center items-center disabled:opacity-30 disabled:cursor-not-allowed group shadow-md text-white" style={{ backgroundColor: '#2c2520' }}
           >
             {isLoading ? (
               <DNALoader />

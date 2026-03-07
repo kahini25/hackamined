@@ -8,11 +8,11 @@ import CliffhangerMeter from './charts/CliffhangerMeter';
 import VideoGenerator from './VideoGenerator';
 
 const TABS = [
-  { id: 'analytics', label: '📊 Analytics' },
-  { id: 'video', label: '🎬 Video Generator' },
+  { id: 'analytics', label: 'Analytics' },
+  { id: 'video', label: 'Video Generator' },
 ];
 
-const EpisodeDashboard = ({ episodes }) => {
+const EpisodeDashboard = ({ episodes, onReset }) => {
   const [selectedEp, setSelectedEp] = useState(null);
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -56,8 +56,20 @@ const EpisodeDashboard = ({ episodes }) => {
   if (!selectedEp) {
     return (
       <div className="max-w-6xl mx-auto mt-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div className="flex justify-start mb-8">
+          <button
+            onClick={onReset}
+            className="group flex items-center gap-2 px-4 py-2 rounded-full border transition-all text-xs font-light uppercase tracking-[0.2em]"
+            style={{ backgroundColor: '#faf7f2', borderColor: '#e8e2d8', color: '#9c9088' }}
+          >
+            <svg className="w-4 h-4 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            New Arc
+          </button>
+        </div>
         <header className="mb-12 text-center">
-          <h1 className="text-4xl font-extrabold text-black tracking-tight mb-4">Narrative Arc Generated</h1>
+          <h1 className="text-4xl font-extrabold tracking-tight mb-4" style={{ color: '#2c2520' }}>Narrative Arc Generated</h1>
           <p className="text-gray-500 max-w-2xl mx-auto text-lg">
             We've mapped out 5 episodes for your story. Select an episode to dive into its Narrative DNA and emotional metrics.
           </p>
@@ -68,7 +80,7 @@ const EpisodeDashboard = ({ episodes }) => {
             <div
               key={idx}
               onClick={() => handleSelectEpisode(ep)}
-              className="group relative bg-white border border-[#f0f0f0] p-8 rounded-2xl cursor-pointer transition-all hover:border-black/5 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)] overflow-hidden"
+              className="group relative border p-8 rounded-2xl cursor-pointer transition-all overflow-hidden" style={{ backgroundColor: '#faf7f2', borderColor: '#e8e2d8' }}
             >
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
 
@@ -105,15 +117,15 @@ const EpisodeDashboard = ({ episodes }) => {
         <div className="flex items-center gap-6">
           <button
             onClick={handleBack}
-            className="p-2 rounded-full border border-[#f0f0f0] hover:bg-black hover:text-white transition-all text-gray-400"
+            className="p-2 rounded-full border transition-all" style={{ borderColor: '#e8e2d8', color: '#9c9088', backgroundColor: '#faf7f2' }}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
           <div>
-            <div className="text-xs font-mono text-gray-400 uppercase tracking-[0.2em] mb-1">Detailed Analysis</div>
-            <h2 className="text-3xl font-bold text-black tracking-tight">{selectedEp.title}</h2>
+            <div className="text-xs font-light text-[#9c9088] uppercase tracking-[0.2em] mb-1">Detailed Analysis</div>
+            <h2 className="text-3xl font-bold tracking-tight" style={{ color: '#2c2520' }}>{selectedEp.title}</h2>
           </div>
         </div>
 
@@ -121,7 +133,7 @@ const EpisodeDashboard = ({ episodes }) => {
           <button
             onClick={handleImprove}
             disabled={improving || loading}
-            className="px-6 py-2.5 bg-black text-white hover:bg-gray-800 rounded-full font-bold text-sm transition-all shadow-lg flex items-center gap-2 disabled:opacity-50"
+            className="px-6 py-2.5 text-white hover:opacity-80 rounded-full font-bold text-sm transition-all shadow-md flex items-center gap-2 disabled:opacity-50" style={{ backgroundColor: '#2c2520' }}
           >
             {improving ? (
               <><div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" /> Improving...</>
@@ -134,10 +146,11 @@ const EpisodeDashboard = ({ episodes }) => {
               </>
             )}
           </button>
-          
+
           <button
             onClick={() => setShowVideoGen(!showVideoGen)}
-            className={`px-6 py-2.5 rounded-full font-bold text-sm transition-all shadow-lg flex items-center gap-2 ${showVideoGen ? 'bg-purple-600 text-white hover:bg-purple-700' : 'bg-gray-100 text-black hover:bg-gray-200'}`}
+            className={`px-6 py-2.5 rounded-full font-bold text-sm transition-all shadow-sm flex items-center gap-2`}
+            style={showVideoGen ? { backgroundColor: '#c8bfb0', color: '#2c2520' } : { backgroundColor: '#ece8e0', color: '#6b6560' }}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -149,82 +162,82 @@ const EpisodeDashboard = ({ episodes }) => {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left Column: Script & Synopsis */}
-        <div className="lg:col-span-4 space-y-6">
-          <div className="bg-white border border-[#f0f0f0] p-6 rounded-2xl">
-            <h3 className="text-[10px] font-mono text-gray-400 uppercase tracking-[0.2em] mb-4">Synopsis</h3>
+        <div className="lg:col-span-5 space-y-4">
+          <div className="p-4 rounded-2xl border" style={{ backgroundColor: '#faf7f2', borderColor: '#e8e2d8' }}>
+            <h3 className="text-xs font-light text-[#9c9088] uppercase tracking-[0.2em] mb-4">Synopsis</h3>
             <p className="text-gray-600 leading-relaxed italic">"{selectedEp.synopsis}"</p>
           </div>
 
-          <div className="bg-white border border-[#f0f0f0] p-6 rounded-2xl shadow-sm">
+          <div className="p-4 rounded-2xl border" style={{ backgroundColor: '#faf7f2', borderColor: '#e8e2d8' }}>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-[10px] font-mono text-gray-400 uppercase tracking-[0.2em]">Script Segment</h3>
+              <h3 className="text-xs font-light text-[#9c9088] uppercase tracking-[0.2em]">Script Segment</h3>
             </div>
-            <div className="bg-[#fcfcfc] p-5 rounded-xl border border-[#f0f0f0] font-mono text-sm leading-relaxed text-gray-600 whitespace-pre-wrap max-h-[500px] overflow-y-auto custom-scrollbar">
+            <div className="p-4 rounded-xl border font-mono text-sm leading-relaxed whitespace-pre-wrap max-h-[620px] overflow-y-auto custom-scrollbar" style={{ backgroundColor: '#f0ebe2', borderColor: '#e0d8cc', color: '#6b6560' }}>
               {selectedEp.script_segment}
             </div>
           </div>
         </div>
 
         {/* Right Column: Analytics */}
-        <div className="lg:col-span-8">
+        <div className="lg:col-span-7">
           {loading ? (
-            <div className="h-[600px] flex flex-col items-center justify-center bg-white border border-[#f0f0f0] rounded-2xl">
+            <div className="h-[600px] flex flex-col items-center justify-center rounded-2xl border" style={{ backgroundColor: '#faf7f2', borderColor: '#e8e2d8' }}>
               <div className="w-12 h-12 border-4 border-black/5 border-t-black rounded-full animate-spin mb-4" />
-              <div className="text-black font-bold tracking-widest uppercase text-xs animate-pulse">Sequencing Narrative DNA...</div>
+              <div className="font-bold tracking-widest uppercase text-xs animate-pulse" style={{ color: '#6b6560' }}>Sequencing Narrative DNA...</div>
             </div>
           ) : analytics ? (
             <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-700">
               {/* Top row indicators */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white border border-[#f0f0f0] p-6 rounded-2xl">
+              <div className="grid grid-cols-5 gap-4">
+                <div className="col-span-3 p-6 rounded-2xl border" style={{ backgroundColor: '#faf7f2', borderColor: '#e8e2d8' }}>
                   <CliffhangerMeter score={analytics.cliffhanger_score} />
                 </div>
-                <div className="bg-white border border-[#f0f0f0] p-6 rounded-2xl flex flex-col justify-center items-center">
-                  <div className="text-[10px] font-mono text-gray-400 uppercase tracking-[0.2em] mb-3 text-center">Retention Score</div>
-                  <div className="text-5xl font-black text-black">{analytics.scroll_stop_score}</div>
-                  <div className="mt-2 text-[10px] text-gray-400 font-medium">Binge-Watch Potential</div>
+                <div className="col-span-1 p-4 rounded-2xl border flex flex-col justify-center items-center" style={{ backgroundColor: '#faf7f2', borderColor: '#e8e2d8' }}>
+                  <div className="text-xs font-light text-[#9c9088] uppercase tracking-[0.2em] mb-2 text-center">Retention Score</div>
+                  <div className="text-4xl font-black" style={{ color: '#2c2520' }}>{analytics.scroll_stop_score}</div>
+                  <div className="mt-1 text-[9px] text-gray-400 font-medium text-center">Binge-Watch Potential</div>
                 </div>
-                <div className="bg-white border border-[#f0f0f0] p-6 rounded-2xl flex flex-col justify-center items-center">
-                  <div className="text-[10px] font-mono text-gray-400 uppercase tracking-[0.2em] mb-3 text-center">Viral Moments</div>
-                  <div className="text-5xl font-black text-black">{analytics.viral_moments.length}</div>
-                  <div className="mt-2 text-[10px] text-gray-400 font-medium">High Shear Potential</div>
+                <div className="col-span-1 p-4 rounded-2xl border flex flex-col justify-center items-center" style={{ backgroundColor: '#faf7f2', borderColor: '#e8e2d8' }}>
+                  <div className="text-xs font-light text-[#9c9088] uppercase tracking-[0.2em] mb-2 text-center">Viral Moments</div>
+                  <div className="text-4xl font-black" style={{ color: '#2c2520' }}>{analytics.viral_moments.length}</div>
+                  <div className="mt-1 text-[9px] text-gray-400 font-medium text-center">High Shear Potential</div>
                 </div>
               </div>
 
               {/* Charts */}
-              <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
                 <div className="space-y-8">
-                  <div className="bg-white border border-[#f0f0f0] p-6 rounded-2xl">
-                    <h3 className="text-[10px] font-mono text-gray-400 uppercase tracking-[0.2em] mb-6">Audience Interest Heatmap</h3>
+                  <div className="p-4 rounded-2xl border" style={{ backgroundColor: '#faf7f2', borderColor: '#e8e2d8' }}>
+                    <h3 className="text-xs font-light text-[#9c9088] uppercase tracking-[0.2em] mb-6">Audience Interest Heatmap</h3>
                     <RetentionHeatmap data={analytics.drop_off_risk?.segments || analytics.drop_off_risk} />
                   </div>
-                  <div className="bg-white border border-[#f0f0f0] p-6 rounded-2xl">
-                    <h3 className="text-[10px] font-mono text-gray-400 uppercase tracking-[0.2em] mb-6">Emotional Arc</h3>
+                  <div className="p-4 rounded-2xl border" style={{ backgroundColor: '#faf7f2', borderColor: '#e8e2d8' }}>
+                    <h3 className="text-xs font-light text-[#9c9088] uppercase tracking-[0.2em] mb-6">Emotional Arc</h3>
                     <div className="rounded-xl overflow-hidden">
                       <EmotionalArcChart data={analytics.emotional_arc} />
                     </div>
                   </div>
                 </div>
-                <div className="bg-white border border-[#f0f0f0] p-6 rounded-2xl">
-                  <h3 className="text-[10px] font-mono text-gray-400 uppercase tracking-[0.2em] mb-6">Character Dynamics Graph</h3>
+                <div className="p-4 rounded-2xl border" style={{ backgroundColor: '#faf7f2', borderColor: '#e8e2d8' }}>
+                  <h3 className="text-xs font-light text-[#9c9088] uppercase tracking-[0.2em] mb-6">Character Dynamics Graph</h3>
                   <CharacterGraph data={analytics.tension_graph} />
                 </div>
               </div>
 
               {/* Viral Moments */}
-              <div className="bg-white border border-[#f0f0f0] p-6 rounded-2xl">
+              <div className="p-4 rounded-2xl border" style={{ backgroundColor: '#faf7f2', borderColor: '#e8e2d8' }}>
                 <ViralMoments moments={analytics.viral_moments} />
               </div>
 
               {/* Improvement Section Results */}
               {improvementData && (
-                <div className="bg-white text-black p-8 rounded-2xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] border border-[#f0f0f0] animate-in zoom-in-95 duration-500">
+                <div className="p-8 rounded-2xl border animate-in zoom-in-95 duration-500" style={{ backgroundColor: '#faf7f2', borderColor: '#e8e2d8', color: '#2c2520' }}>
                   <div className="flex justify-between items-start mb-8">
                     <div>
-                      <h3 className="text-2xl font-black tracking-tighter uppercase text-black">Script Surgery Report</h3>
+                      <h3 className="text-2xl font-black tracking-tighter uppercase" style={{ color: '#2c2520' }}>Script Surgery Report</h3>
                       <p className="text-gray-400 text-sm mt-1 uppercase tracking-widest font-mono font-bold">AI-Powered Optimization</p>
                     </div>
-                    <div className="flex items-center gap-6 bg-[#fafafa] px-6 py-3 rounded-xl border border-[#f0f0f0]">
+                    <div className="flex items-center gap-6 px-6 py-3 rounded-xl border" style={{ backgroundColor: '#f0ebe2', borderColor: '#e0d8cc' }}>
                       <div className="text-center">
                         <div className="text-[10px] uppercase font-bold text-gray-400 mb-1">Old Score</div>
                         <div className="text-xl font-bold text-gray-300 line-through">{improvementData.original_score}</div>
@@ -260,7 +273,7 @@ const EpisodeDashboard = ({ episodes }) => {
                       </div>
                     </div>
 
-                    <div className="bg-[#fafafa] border border-[#f0f0f0] p-6 rounded-xl">
+                    <div className="p-6 rounded-xl border" style={{ backgroundColor: '#f0ebe2', borderColor: '#e0d8cc' }}>
                       <h4 className="text-xs font-bold text-black uppercase tracking-widest mb-4 flex items-center justify-between">
                         Optimized Segment
                         <span className="text-[10px] text-black bg-white px-2 py-0.5 rounded-full border border-[#f0f0f0]">HIGH TENSION</span>
@@ -272,16 +285,16 @@ const EpisodeDashboard = ({ episodes }) => {
                   </div>
                 </div>
               )}
-              
+
               {/* Video Generator Section */}
               {showVideoGen && (
                 <div className="mt-8 animate-in slide-in-from-bottom-4 duration-500">
-                   <VideoGenerator episode={selectedEp} genre="drama" />
+                  <VideoGenerator episode={selectedEp} genre="drama" />
                 </div>
               )}
             </div>
           ) : (
-            <div className="h-[600px] flex flex-col items-center justify-center bg-white border border-[#f0f0f0] rounded-2xl text-gray-300">
+            <div className="h-[600px] flex flex-col items-center justify-center rounded-2xl border" style={{ backgroundColor: '#faf7f2', borderColor: '#e8e2d8', color: '#c8bfb0' }}>
               Select an episode to view analysis
             </div>
           )}

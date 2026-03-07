@@ -58,10 +58,10 @@ async def generate_arc(request: StoryRequest):
     """
 
     last_error = None
-    for attempt in range(3):
+    for attempt in range(4): # Increased to 4 attempts
         try:
             response = client.models.generate_content(
-                model='gemini-2.5-flash',
+                model='gemini-2.0-flash',
                 contents=prompt,
             )
             text = response.text.replace("```json", "").replace("```", "")
@@ -70,20 +70,28 @@ async def generate_arc(request: StoryRequest):
             return ArcResponse(episodes=episodes)
         except Exception as e:
             last_error = e
-            err_str = str(e)
+            err_str = str(e).upper()
             print(f"Attempt {attempt+1} failed: {err_str[:200]}")
-            if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str:
-                if attempt < 2:
-                    wait = 20 if attempt == 0 else 60
-                    print(f"Rate limited. Waiting {wait}s before retry...")
-                    time.sleep(wait)
+            
+            # Quota / Rate limit handling
+            if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str or "QUOTA" in err_str:
+                if attempt < 3:
+                    wait = 30 * (attempt + 1) # 30s, 60s, 90s backoff
+                    print(f"Rate limited or Quota exceeded. Waiting {wait}s before retry...")
+                    await asyncio.sleep(wait) # USE ASYNC SLEEP
                     continue
                 raise HTTPException(
                     status_code=429,
                     detail="Gemini API quota exceeded. The free-tier rate limit has been reached. Please wait a minute and try again, or upgrade your API key at https://ai.google.dev."
                 )
+            
+            # Generic error mapping
+            if "API_KEY_INVALID" in err_str or "400" in err_str and "EXPIRED" in err_str:
+                raise HTTPException(status_code=401, detail="API Key appears to be invalid or expired. Please check backend/.env.")
+                
             raise HTTPException(status_code=500, detail=f"Gemini API error: {err_str[:300]}")
-    raise HTTPException(status_code=429, detail="Gemini API rate limit hit after retries. Please wait a minute and try again.")
+    
+    raise HTTPException(status_code=429, detail="Gemini API rate limit hit after multiple retries. Please wait a few minutes.")
 
 @app.post("/analyze_story", response_model=AnalyticsResponse)
 async def analyze_story(request: AnalysisRequest):
@@ -140,7 +148,7 @@ async def improve_cliffhanger(request: ImprovementRequest):
     
     try:
         response = client.models.generate_content(
-            model='gemini-2.5-flash',
+            model='gemini-2.0-flash',
             contents=prompt,
         )
         text = response.text.replace("```json", "").replace("```", "")
@@ -234,7 +242,7 @@ async def suggest_style(request: StyleSuggestionRequest):
     """
     
     try:
-        response = client.models.generate_content(model='gemini-2.5-flash', contents=prompt)
+        response = client.models.generate_content(model='gemini-2.0-flash', contents=prompt)
         text = response.text.replace("```json", "").replace("```", "").strip()
         data = json.loads(text)
         return StyleSuggestionResponse(

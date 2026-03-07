@@ -29,25 +29,29 @@ function App() {
     setEpisodes([uploadedEp]);
   };
 
+  const handleReset = () => {
+    setEpisodes([]);
+  };
+
   return (
-    <div className="min-h-screen bg-[#fbfbfb] text-[#555] p-6 font-sans selection:bg-black selection:text-white">
+    <div className="min-h-screen text-[#6b6560] p-6 font-sans" style={{ backgroundColor: '#f5f0e8' }}>
       <div className="max-w-7xl mx-auto">
 
 
         {episodes.length === 0 ? (
           <div className="max-w-2xl mx-auto mt-6">
             <div className="mb-8 text-center">
-              <h1 className="text-4xl font-black mb-3 text-black uppercase tracking-[-0.03em]" style={{ wordSpacing: '0.35em' }}>
-                Narrative DNA <span className="text-gray-300">Engine</span>
+              <h1 className="text-4xl font-black mb-3 uppercase tracking-[-0.03em]" style={{ wordSpacing: '0.35em', color: '#2c2520' }}>
+                Narrative DNA <span style={{ color: '#c8bfb0' }}>Engine</span>
               </h1>
-              <p className="text-gray-500 text-sm leading-relaxed">
+              <p className="text-sm leading-relaxed" style={{ color: '#9c9088' }}>
                 Decode the genetic architecture of your story.
               </p>
             </div>
             <StoryInput onGenerate={handleGenerate} onUpload={handleUpload} isLoading={loading} />
           </div>
         ) : (
-          <EpisodeDashboard episodes={episodes} />
+          <EpisodeDashboard episodes={episodes} onReset={handleReset} />
         )}
       </div>
     </div>
