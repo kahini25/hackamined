@@ -8,7 +8,7 @@ client = genai.Client(api_key=key)
 
 try:
     response = client.models.generate_content(
-        model='gemini-2.0-flash',
+        model='gemini-2.5-flash',
         contents='Hello',
     )
     print("SUCCESS")

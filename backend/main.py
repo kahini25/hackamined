@@ -61,7 +61,7 @@ async def generate_arc(request: StoryRequest):
     for attempt in range(4): # Increased to 4 attempts
         try:
             response = client.models.generate_content(
-                model='gemini-2.0-flash',
+                model='gemini-2.5-flash',
                 contents=prompt,
             )
             text = response.text.replace("```json", "").replace("```", "")
@@ -170,7 +170,7 @@ async def improve_cliffhanger(request: ImprovementRequest):
     
     try:
         response = client.models.generate_content(
-            model='gemini-2.0-flash',
+            model='gemini-2.5-flash',
             contents=prompt,
         )
         text = response.text.replace("```json", "").replace("```", "")
@@ -264,7 +264,7 @@ async def suggest_style(request: StyleSuggestionRequest):
     """
     
     try:
-        response = client.models.generate_content(model='gemini-2.0-flash', contents=prompt)
+        response = client.models.generate_content(model='gemini-2.5-flash', contents=prompt)
         text = response.text.replace("```json", "").replace("```", "").strip()
         data = json.loads(text)
         return StyleSuggestionResponse(
