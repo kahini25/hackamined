@@ -37,20 +37,11 @@ const StoryInput = ({ onGenerate, onUpload, isLoading }) => {
   };
 
   return (
-    <div className="relative p-10 bg-white text-gray-900 rounded-3xl shadow-[0_10px_50px_-15px_rgba(0,0,0,0.1)] border border-[#f0f0f0] overflow-hidden">
+    <div className="relative p-10 bg-white text-gray-900 rounded-3xl shadow-[0_10px_50px_-15px_rgba(0,0,0,0.1)] border border-[#f0f0f0]">
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-black/5 to-transparent"></div>
 
-      <div className="absolute top-8 right-10 text-[10px] font-mono text-gray-400 tracking-widest uppercase">
-        System v2.4
-      </div>
-
-      <div className="mb-12">
-        <h2 className="text-4xl font-black mb-3 text-black tracking-tighter uppercase">
-          Narrative DNA <span className="text-gray-300">Engine</span>
-        </h2>
-        <p className="text-gray-500 max-w-md text-sm leading-relaxed">
-          Decode the genetic architecture of your story.
-        </p>
+      <div className="flex justify-end mb-4">
+        <span className="text-[10px] font-mono text-gray-300 tracking-widest uppercase">System v2.4</span>
       </div>
 
       {/* Tabs */}
@@ -59,13 +50,13 @@ const StoryInput = ({ onGenerate, onUpload, isLoading }) => {
           className={`flex-1 py-3 px-4 rounded-lg transition-all ${activeTab === 'generate' ? 'bg-white text-black shadow-sm border border-[#f0f0f0]' : 'text-gray-400 hover:text-gray-600'}`}
           onClick={() => setActiveTab('generate')}
         >
-          Synthesize Arc
+          Story Title and Synopsis
         </button>
         <button
           className={`flex-1 py-3 px-4 rounded-lg transition-all ${activeTab === 'upload' ? 'bg-white text-black shadow-sm border border-[#f0f0f0]' : 'text-gray-400 hover:text-gray-600'}`}
           onClick={() => setActiveTab('upload')}
         >
-          Import Sequence
+          Upload Existing Script
         </button>
       </div>
 
@@ -91,7 +82,7 @@ const StoryInput = ({ onGenerate, onUpload, isLoading }) => {
             </div>
           </div>
           <div>
-            <label className="block text-[10px] font-mono font-bold text-gray-400 mb-2 uppercase tracking-widest">Narrative Core</label>
+            <label className="block text-[10px] font-mono font-bold text-gray-400 mb-2 uppercase tracking-widest">What is your story about?</label>
             <textarea
               value={idea}
               onChange={(e) => setIdea(e.target.value)}

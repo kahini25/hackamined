@@ -41,38 +41,11 @@ app.add_middleware(
 
 @app.post("/generate_arc", response_model=ArcResponse)
 async def generate_arc(request: StoryRequest):
-    # Fallback data for demo/quota limits
-    fallback_episodes = [
-        Episode(
-            title="The Silent Echo (Demo Arc)",
-            synopsis="In a world where sound is currency, a mute girl discovers a frequency that can rewrite reality.",
-            script_segment="INT. ABANDONED SUBWAY - NIGHT\n\nKIRA (20s) touches the rusted rail. It vibrates.\n\nKIRA\n(signing)\nIt's alive.\n\nMARCUS watches her, terrified.\n\nMARCUS\nDon't let it hear you.\n\nThe tunnel SHAKES. Dust falls from the ceiling."
-        ),
-        Episode(
-            title="Frequency Shift",
-            synopsis="Kira is hunted by the Sound Guardians who want to harvest her discovery.",
-            script_segment="EXT. ROOFTOP - RAIN\n\nRain lashes down. A dark figure lands behind Kira.\n\nGUARDIAN\nGive us the frequency.\n\nKira steps to the edge. She taps her foot. The thunder syncs with her rhythm."
-        ),
-        Episode(
-            title="Resonance",
-            synopsis="Marcus betrays Kira to save his family, leading to a confrontation at the harmonic plant.",
-            script_segment="INT. CONTROL ROOM - DAY\n\nMARCUS\nI had no choice, Kira.\n\nKira looks at the screens. They show her heartbeat.\n\nKIRA\n(signing)\nWe always have a choice.\n\nShe pulls the lever. The sirens turn into a melody."
-        ),
-        Episode(
-            title="Dissonance",
-            synopsis="The city begins to crumble as the frequency destabilizes the foundations of society.",
-            script_segment="EXT. CITY SQUARE - DAY\n\nBuildings vibrate. Glass shatters in slow motion.\n\nCITIZEN\nMake it stop!\n\nKira stands in the center, eyes closed, conducting the destruction."
-        ),
-        Episode(
-            title="The Final Note",
-            synopsis="Kira must decide whether to silence the world to save it, or let the song play out.",
-            script_segment="INT. THE VOID - TIMELESS\n\nKira floats in white space.\n\nVOICE\nEnd the song, Kira.\n\nKira opens her mouth. For the first time, she speaks.\n\nKIRA\nNo.\n\nThe world fades to white."
-        )
-    ]
+    from fastapi import HTTPException
+    import time
 
     if not client:
-        print("WARNING: Gemini client not configured. Returning Demo Data.")
-        return ArcResponse(episodes=fallback_episodes)
+        raise HTTPException(status_code=503, detail="GOOGLE_API_KEY is not configured on the server. Please add it to backend/.env and restart.")
 
     prompt = f"""
     Act as a master screenwriter. Create a 5-episode arc for a {request.genre} show based on this idea: "{request.idea}".
@@ -83,20 +56,34 @@ async def generate_arc(request: StoryRequest):
         ...
     ]
     """
-    
-    try:
-        response = client.models.generate_content(
-            model='gemini-2.5-flash',
-            contents=prompt,
-        )
-        text = response.text.replace("```json", "").replace("```", "")
-        data = json.loads(text)
-        episodes = [Episode(**ep) for ep in data]
-        return ArcResponse(episodes=episodes)
-    except Exception as e:
-        print(f"Error calling Gemini API (likely quota): {e}")
-        print("Returning Demo Data due to error.")
-        return ArcResponse(episodes=fallback_episodes)
+
+    last_error = None
+    for attempt in range(3):
+        try:
+            response = client.models.generate_content(
+                model='gemini-2.5-flash',
+                contents=prompt,
+            )
+            text = response.text.replace("```json", "").replace("```", "")
+            data = json.loads(text)
+            episodes = [Episode(**ep) for ep in data]
+            return ArcResponse(episodes=episodes)
+        except Exception as e:
+            last_error = e
+            err_str = str(e)
+            print(f"Attempt {attempt+1} failed: {err_str[:200]}")
+            if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str:
+                if attempt < 2:
+                    wait = 20 if attempt == 0 else 60
+                    print(f"Rate limited. Waiting {wait}s before retry...")
+                    time.sleep(wait)
+                    continue
+                raise HTTPException(
+                    status_code=429,
+                    detail="Gemini API quota exceeded. The free-tier rate limit has been reached. Please wait a minute and try again, or upgrade your API key at https://ai.google.dev."
+                )
+            raise HTTPException(status_code=500, detail=f"Gemini API error: {err_str[:300]}")
+    raise HTTPException(status_code=429, detail="Gemini API rate limit hit after retries. Please wait a minute and try again.")
 
 @app.post("/analyze_story", response_model=AnalyticsResponse)
 async def analyze_story(request: AnalysisRequest):

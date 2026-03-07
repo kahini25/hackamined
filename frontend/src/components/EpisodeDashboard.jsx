@@ -151,14 +151,13 @@ const EpisodeDashboard = ({ episodes }) => {
         {/* Left Column: Script & Synopsis */}
         <div className="lg:col-span-4 space-y-6">
           <div className="bg-white border border-[#f0f0f0] p-6 rounded-2xl">
-            <h3 className="text-xs font-mono text-gray-400 uppercase tracking-widest mb-4">Synopsis</h3>
+            <h3 className="text-[10px] font-mono text-gray-400 uppercase tracking-[0.2em] mb-4">Synopsis</h3>
             <p className="text-gray-600 leading-relaxed italic">"{selectedEp.synopsis}"</p>
           </div>
 
           <div className="bg-white border border-[#f0f0f0] p-6 rounded-2xl shadow-sm">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xs font-mono text-gray-400 uppercase tracking-widest">Script Segment</h3>
-              <span className="text-[10px] bg-[#fafafa] px-2 py-1 rounded border border-[#f0f0f0] text-gray-400 font-mono">CODE VIEW</span>
+              <h3 className="text-[10px] font-mono text-gray-400 uppercase tracking-[0.2em]">Script Segment</h3>
             </div>
             <div className="bg-[#fcfcfc] p-5 rounded-xl border border-[#f0f0f0] font-mono text-sm leading-relaxed text-gray-600 whitespace-pre-wrap max-h-[500px] overflow-y-auto custom-scrollbar">
               {selectedEp.script_segment}
@@ -196,18 +195,18 @@ const EpisodeDashboard = ({ episodes }) => {
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
                 <div className="space-y-8">
                   <div className="bg-white border border-[#f0f0f0] p-6 rounded-2xl">
-                    <h3 className="text-xs font-mono text-gray-400 uppercase tracking-widest mb-6">Audience Interest Heatmap</h3>
+                    <h3 className="text-[10px] font-mono text-gray-400 uppercase tracking-[0.2em] mb-6">Audience Interest Heatmap</h3>
                     <RetentionHeatmap data={analytics.drop_off_risk?.segments || analytics.drop_off_risk} />
                   </div>
                   <div className="bg-white border border-[#f0f0f0] p-6 rounded-2xl">
-                    <h3 className="text-xs font-mono text-gray-400 uppercase tracking-widest mb-6">Emotional Arc</h3>
+                    <h3 className="text-[10px] font-mono text-gray-400 uppercase tracking-[0.2em] mb-6">Emotional Arc</h3>
                     <div className="rounded-xl overflow-hidden">
                       <EmotionalArcChart data={analytics.emotional_arc} />
                     </div>
                   </div>
                 </div>
                 <div className="bg-white border border-[#f0f0f0] p-6 rounded-2xl">
-                  <h3 className="text-xs font-mono text-gray-400 uppercase tracking-widest mb-6">Character Dynamics Graph</h3>
+                  <h3 className="text-[10px] font-mono text-gray-400 uppercase tracking-[0.2em] mb-6">Character Dynamics Graph</h3>
                   <CharacterGraph data={analytics.tension_graph} />
                 </div>
               </div>

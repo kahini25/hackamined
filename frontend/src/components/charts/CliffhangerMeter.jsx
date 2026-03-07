@@ -24,7 +24,7 @@ const CliffhangerMeter = ({ score }) => {
 
     return (
         <div className="w-full">
-            <h3 className="text-gray-400 font-bold text-[10px] mb-6 uppercase tracking-[0.2em] flex justify-between">
+            <h3 className="text-[10px] font-mono text-gray-400 uppercase tracking-[0.2em] mb-6 flex justify-between">
                 Cliffhanger Strength
                 <span className={`font-black ${statusColor}`}>{normalizedScore.toFixed(0)} / 100</span>
             </h3>

@@ -13,8 +13,8 @@ function App() {
       const data = await generateArc(idea, genre);
       setEpisodes(data.episodes);
     } catch (error) {
-      console.error("Failed to generate", error);
-      alert("Error connecting to backend. Make sure uvicorn is running.");
+      const msg = error?.response?.data?.detail || error?.message || "Unknown error";
+      alert(`⚠️ Generation failed:\n\n${msg}`);
     }
     setLoading(false);
   };
@@ -35,7 +35,15 @@ function App() {
 
 
         {episodes.length === 0 ? (
-          <div className="max-w-2xl mx-auto mt-20">
+          <div className="max-w-2xl mx-auto mt-6">
+            <div className="mb-8 text-center">
+              <h1 className="text-4xl font-black mb-3 text-black uppercase tracking-[-0.03em]" style={{ wordSpacing: '0.35em' }}>
+                Narrative DNA <span className="text-gray-300">Engine</span>
+              </h1>
+              <p className="text-gray-500 text-sm leading-relaxed">
+                Decode the genetic architecture of your story.
+              </p>
+            </div>
             <StoryInput onGenerate={handleGenerate} onUpload={handleUpload} isLoading={loading} />
           </div>
         ) : (
